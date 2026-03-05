@@ -6,6 +6,16 @@ from daka import handler
 
 
 class TestHandler(unittest.TestCase):
+    def test_resolution_color_map_assigns_different_colors(self):
+        resolutions = [
+            {"name": "Fitness", "items": []},
+            {"name": "Art", "items": []},
+        ]
+        colors = handler._resolution_color_map(resolutions)
+        self.assertIn("Fitness", colors)
+        self.assertIn("Art", colors)
+        self.assertNotEqual(colors["Fitness"], colors["Art"])
+
     def test_parse_date_defaults_to_today(self):
         self.assertEqual(handler.parse_date(None), dt.date.today().isoformat())
 
@@ -64,6 +74,36 @@ class TestHandler(unittest.TestCase):
 
         self.assertEqual(data["resolutions"][0]["items"][0]["name"], "question")
         self.assertEqual(data["resolutions"][0]["items"][0]["checkins"], ["2026-03-04"])
+        mock_save_resolutions.assert_called_once()
+        mock_save_checkins.assert_called_once()
+
+    def test_rename_entities_renames_resolution(self):
+        data = {"resolutions": [{"name": "Fitness", "items": [{"name": "Pushups", "checkins": []}]}]}
+
+        # Select resolution 1 -> rename resolution -> new name -> quit.
+        with patch("builtins.input", side_effect=["1", "r", "Health", "q"]), patch.object(
+            handler, "load_data", return_value=data
+        ), patch.object(handler, "save_resolutions") as mock_save_resolutions, patch.object(
+            handler, "save_checkins"
+        ) as mock_save_checkins:
+            handler.rename_entities()
+
+        self.assertEqual(data["resolutions"][0]["name"], "Health")
+        mock_save_resolutions.assert_called_once()
+        mock_save_checkins.assert_called_once()
+
+    def test_rename_entities_renames_item(self):
+        data = {"resolutions": [{"name": "Fitness", "items": [{"name": "Pushups", "checkins": []}]}]}
+
+        # Select resolution 1 -> rename item -> select item 1 -> new name -> quit.
+        with patch("builtins.input", side_effect=["1", "i", "1", "Morning Run", "q"]), patch.object(
+            handler, "load_data", return_value=data
+        ), patch.object(handler, "save_resolutions") as mock_save_resolutions, patch.object(
+            handler, "save_checkins"
+        ) as mock_save_checkins:
+            handler.rename_entities()
+
+        self.assertEqual(data["resolutions"][0]["items"][0]["name"], "Morning Run")
         mock_save_resolutions.assert_called_once()
         mock_save_checkins.assert_called_once()
 

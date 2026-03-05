@@ -24,8 +24,14 @@ python -m pip install -e . --user
 ```
 daka -d <date> # default date is today's date
 daka -s        # summarize all check-ins and exit
+daka --rename  # rename a resolution or item and exit
 ```
 
-3. 选择打卡项目或者增加项目（resolution）
+3. CLI 选项说明
+- `-d, --date <YYYY-MM-DD>`：指定打卡日期；不传则使用今天。
+- `-s, --summary`：汇总显示所有历史打卡记录并退出。
+- `--rename`：进入重命名工具，可重命名 resolution 或 item，并保存后退出。
 
-4. 选择具体条目或者增加条目（item）
+4. 选择打卡项目或者增加项目（resolution）
+
+5. 选择具体条目或者增加条目（item）

@@ -5,20 +5,8 @@ from __future__ import annotations
 import os
 import sys
 
+from daka.color_config import PALETTE, RESET
 from daka.data_loader import load_data
-
-RESET = "\033[0m"
-PALETTE = [
-    "\033[31m",  # red
-    "\033[32m",  # green
-    "\033[33m",  # yellow
-    "\033[34m",  # blue
-    "\033[35m",  # magenta
-    "\033[36m",  # cyan
-    "\033[91m",  # bright red
-    "\033[92m",  # bright green
-    "\033[94m",  # bright blue
-]
 
 
 def _should_use_color() -> bool:
