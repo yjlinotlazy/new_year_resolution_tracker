@@ -67,6 +67,5 @@ class TestHandler(unittest.TestCase):
         mock_save_resolutions.assert_called_once()
         mock_save_checkins.assert_called_once()
 
-
 if __name__ == "__main__":
     unittest.main()

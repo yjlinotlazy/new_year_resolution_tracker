@@ -23,6 +23,7 @@ python -m pip install -e . --user
 2. 进入程序
 ```
 daka -d <date> # default date is today's date
+daka -s        # summarize all check-ins and exit
 ```
 
 3. 选择打卡项目或者增加项目（resolution）
