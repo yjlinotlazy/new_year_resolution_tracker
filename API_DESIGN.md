@@ -1,0 +1,32 @@
+# daka API Design
+
+```mermaid
+flowchart TD
+    A["CLI: daka"] --> B["parse args<br/>-d/--date<br/>-l/--log<br/>-s/--summary<br/>--rename"]
+
+    B -->|--log| C["analytic_handler.summarize_all_checkins()"]
+    B -->|--summary| C2["analytic_handler.summarize_completion()"]
+    B -->|--rename| D["handler.rename_entities()"]
+    B -->|default| E["handler.parse_date()"]
+    E --> F["handler.run(date_str)"]
+
+    C --> G["data_loader.load_data()"]
+    C --> H["color_config.PALETTE/RESET"]
+    C2 --> G
+    C2 --> H
+
+    D --> G
+    D --> H
+    D --> I["data_loader.save_resolutions()"]
+    D --> J["data_loader.save_checkins()"]
+
+    F --> G
+    F --> H
+    F --> I
+    F --> J
+
+    G --> K["~/.config/daka/resolutions.json"]
+    G --> L["~/.config/daka/data.csv"]
+    I --> K
+    J --> L
+```

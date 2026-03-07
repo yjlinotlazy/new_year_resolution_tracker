@@ -26,7 +26,7 @@ def display_menu(title: str, entries: list[str]) -> None:
         print("(none)")
     for i, entry in enumerate(entries, start=1):
         print(f"{i}. {entry}")
-    print("输入数字=选择，输入文字=新增，直接回车=返回，输入 q=退出")
+    print("输入数字=选择，输入文字=新增，直接回车=返回，q=退出")
 
 
 def display_select_menu(title: str, entries: list[str]) -> None:
@@ -35,7 +35,7 @@ def display_select_menu(title: str, entries: list[str]) -> None:
         print("(none)")
     for i, entry in enumerate(entries, start=1):
         print(f"{i}. {entry}")
-    print("输入数字=选择，直接回车=返回，输入 q=退出")
+    print("输入数字=选择，直接回车=返回，q=退出")
 
 
 def ask_choice(entries: list[str], add_prompt: str) -> tuple[str, int | str | None]:
@@ -154,14 +154,14 @@ def _rename_item(data: dict[str, Any], resolution_idx: int) -> bool:
     resolution = data["resolutions"][resolution_idx]
     items = resolution["items"]
     if not items:
-        print("该 Resolution 下没有 Item。")
+        print("该 Resolution 下没有 Task。")
         return False
 
     display_select_menu(
-        f"=== {resolution['name']} / 选择要重命名的 Item ===",
+        f"=== {resolution['name']} / 选择要重命名的 Task ===",
         [str(i["name"]) for i in items],
     )
-    action, item_idx = _ask_index([str(i["name"]) for i in items], "输入数字选择 Item，回车返回，q退出")
+    action, item_idx = _ask_index([str(i["name"]) for i in items], "输入数字选择 Task，回车返回，q退出")
     if action == "back":
         return False
     if action == "quit":
@@ -171,7 +171,7 @@ def _rename_item(data: dict[str, Any], resolution_idx: int) -> bool:
 
     assert item_idx is not None
     current_name = str(items[item_idx]["name"]).strip()
-    new_name = input(f"新的 Item 名称（当前: {current_name}）: ").strip()
+    new_name = input(f"新的 Task 名称（当前: {current_name}）: ").strip()
     if not new_name:
         print("名称不能为空。")
         return False
@@ -184,7 +184,7 @@ def _rename_item(data: dict[str, Any], resolution_idx: int) -> bool:
     items[item_idx]["name"] = new_name
     save_resolutions(data)
     save_checkins(data)
-    print(f"已重命名 Item: {current_name} -> {new_name}")
+    print(f"已重命名 Task: {current_name} -> {new_name}")
     return True
 
 
@@ -212,7 +212,7 @@ def rename_entities() -> None:
 
         assert resolution_idx is not None
         resolution = resolutions[resolution_idx]
-        command = input("输入 r 重命名 Resolution，输入 i 重命名 Item，回车返回，q退出: ").strip().lower()
+        command = input("输入 r 重命名 Resolution，输入 i 重命名 Task，回车返回，q退出: ").strip().lower()
 
         if command == "":
             continue
@@ -271,10 +271,10 @@ def run(date_str: str) -> None:
         while True:
             items = resolution["items"]
             display_menu(
-                f"=== {resolution['name']} / 选择具体条目 Item ===",
+                f"=== {resolution['name']} / 选择具体任务 Task ===",
                 [i["name"] for i in items],
             )
-            action2, value2 = ask_choice(items, "选择或新增条目")
+            action2, value2 = ask_choice(items, "选择或新增任务")
 
             if action2 == "back":
                 break
@@ -286,7 +286,7 @@ def run(date_str: str) -> None:
             if action2 == "add":
                 selected_item_idx = ensure_item(resolution, str(value2))
                 save_resolutions(data)
-                print(f"已新增条目: {value2}")
+                print(f"已新增任务: {value2}")
             else:
                 selected_item_idx = int(value2)
 
@@ -297,5 +297,9 @@ def run(date_str: str) -> None:
 
             if done:
                 print(f"打卡成功: {resolution_display_name} / {item['name']} @ {date_str}")
+                return
             else:
-                print(f"今天已打卡: {resolution_display_name} / {item['name']} @ {date_str}")
+                print(f"重复打卡，换一个项目: {resolution_display_name} / {item['name']} @ {date_str}")
+
+            # If check-in is rejected (already checked-in), return to resolution list.
+            break

@@ -77,6 +77,24 @@ class TestHandler(unittest.TestCase):
         mock_save_resolutions.assert_called_once()
         mock_save_checkins.assert_called_once()
 
+    def test_run_quits_after_successful_checkin(self):
+        data = {
+            "resolutions": [
+                {
+                    "name": "study",
+                    "items": [{"name": "question", "checkins": []}],
+                }
+            ]
+        }
+        # Select resolution 1 -> select task 1 -> should quit immediately after successful check-in.
+        with patch("builtins.input", side_effect=["1", "1"]), patch.object(
+            handler, "load_data", return_value=data
+        ), patch.object(handler, "save_checkins") as mock_save_checkins:
+            handler.run("2026-03-04")
+
+        self.assertEqual(data["resolutions"][0]["items"][0]["checkins"], ["2026-03-04"])
+        mock_save_checkins.assert_called_once()
+
     def test_rename_entities_renames_resolution(self):
         data = {"resolutions": [{"name": "Fitness", "items": [{"name": "Pushups", "checkins": []}]}]}
 

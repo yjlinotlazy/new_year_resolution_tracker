@@ -5,12 +5,32 @@ from daka import cli
 
 
 class TestCli(unittest.TestCase):
+    def test_main_log_mode(self):
+        with patch("sys.argv", ["daka", "--log"]), patch.object(
+            cli, "summarize_all_checkins"
+        ) as mock_log, patch.object(cli, "parse_date") as mock_parse_date, patch.object(
+            cli, "run"
+        ) as mock_run, patch.object(
+            cli, "summarize_completion"
+        ) as mock_summary, patch.object(
+            cli, "rename_entities"
+        ) as mock_rename:
+            cli.main()
+
+        mock_log.assert_called_once()
+        mock_parse_date.assert_not_called()
+        mock_run.assert_not_called()
+        mock_summary.assert_not_called()
+        mock_rename.assert_not_called()
+
     def test_main_summary_mode(self):
         with patch("sys.argv", ["daka", "-s"]), patch.object(
-            cli, "summarize_all_checkins"
+            cli, "summarize_completion"
         ) as mock_summary, patch.object(cli, "parse_date") as mock_parse_date, patch.object(
             cli, "run"
         ) as mock_run, patch.object(
+            cli, "summarize_all_checkins"
+        ) as mock_log, patch.object(
             cli, "rename_entities"
         ) as mock_rename:
             cli.main()
@@ -18,12 +38,15 @@ class TestCli(unittest.TestCase):
         mock_summary.assert_called_once()
         mock_parse_date.assert_not_called()
         mock_run.assert_not_called()
+        mock_log.assert_not_called()
         mock_rename.assert_not_called()
 
     def test_main_rename_mode(self):
         with patch("sys.argv", ["daka", "--rename"]), patch.object(
             cli, "rename_entities"
         ) as mock_rename, patch.object(cli, "summarize_all_checkins") as mock_summary, patch.object(
+            cli, "summarize_completion"
+        ) as mock_completion, patch.object(
             cli, "parse_date"
         ) as mock_parse_date, patch.object(
             cli, "run"
@@ -32,6 +55,7 @@ class TestCli(unittest.TestCase):
 
         mock_rename.assert_called_once()
         mock_summary.assert_not_called()
+        mock_completion.assert_not_called()
         mock_parse_date.assert_not_called()
         mock_run.assert_not_called()
 
@@ -40,6 +64,8 @@ class TestCli(unittest.TestCase):
             cli, "parse_date", return_value="2026-03-04"
         ) as mock_parse_date, patch.object(cli, "run") as mock_run, patch.object(
             cli, "summarize_all_checkins"
+        ) as mock_log, patch.object(
+            cli, "summarize_completion"
         ) as mock_summary, patch.object(
             cli, "rename_entities"
         ) as mock_rename:
@@ -47,6 +73,7 @@ class TestCli(unittest.TestCase):
 
         mock_parse_date.assert_called_once_with("2026-03-04")
         mock_run.assert_called_once_with("2026-03-04")
+        mock_log.assert_not_called()
         mock_summary.assert_not_called()
         mock_rename.assert_not_called()
 
