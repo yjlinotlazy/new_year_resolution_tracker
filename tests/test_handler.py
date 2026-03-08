@@ -6,6 +6,13 @@ from daka import handler
 
 
 class TestHandler(unittest.TestCase):
+    def test_format_task_entries_alternates_orange_and_blue(self):
+        formatted = handler._format_task_entries(["a", "b", "c"], use_color=True)
+        self.assertTrue(formatted[0].startswith("\033[38;5;208m"))
+        self.assertTrue(formatted[1].startswith("\033[34m"))
+        self.assertTrue(formatted[2].startswith("\033[38;5;208m"))
+        self.assertTrue(all(s.endswith("\033[0m") for s in formatted))
+
     def test_resolution_color_map_assigns_different_colors(self):
         resolutions = [
             {"name": "Fitness", "items": []},

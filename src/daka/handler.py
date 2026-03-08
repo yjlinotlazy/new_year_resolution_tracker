@@ -10,6 +10,8 @@ from typing import Any
 from daka.color_config import PALETTE, RESET
 from daka.data_loader import load_data, save_checkins, save_resolutions
 
+TASK_ROW_COLORS = ("\033[38;5;208m", "\033[34m")  # orange, blue
+
 
 def parse_date(date_text: str | None) -> str:
     if not date_text:
@@ -112,6 +114,14 @@ def _format_resolution_name(resolution_name: str, use_color: bool, color_map: di
     return f"{color}{resolution_name}{RESET}"
 
 
+def _format_task_entries(task_names: list[str], use_color: bool) -> list[str]:
+    if not use_color:
+        return task_names
+    return [
+        f"{TASK_ROW_COLORS[i % 2]}{task_name}{RESET}" for i, task_name in enumerate(task_names)
+    ]
+
+
 def _ask_index(entries: list[str], prompt: str) -> tuple[str, int | None]:
     raw = input(f"{prompt}: ").strip()
     if raw == "":
@@ -159,7 +169,7 @@ def _rename_item(data: dict[str, Any], resolution_idx: int) -> bool:
 
     display_select_menu(
         f"=== {resolution['name']} / 选择要重命名的 Task ===",
-        [str(i["name"]) for i in items],
+        _format_task_entries([str(i["name"]) for i in items], _should_use_color()),
     )
     action, item_idx = _ask_index([str(i["name"]) for i in items], "输入数字选择 Task，回车返回，q退出")
     if action == "back":
@@ -270,9 +280,10 @@ def run(date_str: str) -> None:
 
         while True:
             items = resolution["items"]
+            task_names = [i["name"] for i in items]
             display_menu(
                 f"=== {resolution['name']} / 选择具体任务 Task ===",
-                [i["name"] for i in items],
+                _format_task_entries(task_names, use_color),
             )
             action2, value2 = ask_choice(items, "选择或新增任务")
 
