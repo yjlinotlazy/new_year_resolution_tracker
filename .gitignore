@@ -201,7 +201,11 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
+CLAUDE.md
+CONTEXT.md
+
 # Marimo
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
