@@ -31,6 +31,8 @@ daka -l        # show raw check-in log and exit
 daka --log     # show raw check-in log and exit
 daka -s        # show yearly completion summary and exit
 daka --summary # show yearly completion summary and exit
+daka -r        # show yearly completion summary rolled up by resolution and exit
+daka --resolution-summary # show yearly completion summary rolled up by resolution and exit
 daka --rename  # rename a resolution or task and exit
 ```
 
@@ -40,6 +42,9 @@ daka --rename  # rename a resolution or task and exit
 - `-s, --summary`：显示年度完成率汇总并退出：
   - day: `打卡天数 / 当年总天数`
   - week: `有打卡的周数 / 当年总周数`
+- `-r, --resolution-summary`：显示 resolution 级别的年度完成率汇总并退出：
+  - 同一个 resolution 下任意 task 在某天有打卡，该 resolution 当天就算 1 次
+  - 同一个 resolution 同一天多个 task 有打卡，不重复计数
 - `--rename`：进入重命名工具，可重命名 resolution 或 task，并保存后退出。
 
 4. 选择打卡项目或者增加项目（resolution）

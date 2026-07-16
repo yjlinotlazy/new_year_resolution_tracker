@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import argparse
 
-from daka.analytic_handler import summarize_all_checkins, summarize_completion
+from daka.analytic_handler import (
+    summarize_all_checkins,
+    summarize_completion,
+    summarize_resolution_completion,
+)
 from daka.handler import parse_date, rename_entities, run
 
 
@@ -13,6 +17,12 @@ def main() -> None:
     parser.add_argument("-d", "--date", help="check-in date in YYYY-MM-DD (default: today)")
     parser.add_argument("-l", "--log", action="store_true", help="show raw check-in log")
     parser.add_argument("-s", "--summary", action="store_true", help="show yearly completion percentages")
+    parser.add_argument(
+        "-r",
+        "--resolution-summary",
+        action="store_true",
+        help="show yearly completion percentages rolled up by resolution",
+    )
     parser.add_argument("--rename", action="store_true", help="rename a resolution or task")
     args = parser.parse_args()
 
@@ -21,6 +31,9 @@ def main() -> None:
         return
     if args.summary:
         summarize_completion()
+        return
+    if args.resolution_summary:
+        summarize_resolution_completion()
         return
     if args.rename:
         rename_entities()

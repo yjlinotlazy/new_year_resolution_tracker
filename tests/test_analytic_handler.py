@@ -205,6 +205,53 @@ class TestAnalyticHandler(unittest.TestCase):
         self.assertIn(f"2/{days_in_year}", text)
         self.assertIn(f"2/{total_weeks_in_year}", text)
 
+    def test_summarize_resolution_completion_rolls_up_items_without_double_counting_days(self):
+        year = dt.date.today().year
+        data = {
+            "resolutions": [
+                {
+                    "name": "Fitness",
+                    "items": [
+                        {
+                            "name": "Pushups",
+                            "checkins": [f"{year}-01-01", f"{year}-01-08"],
+                        },
+                        {
+                            "name": "Run",
+                            "checkins": [f"{year}-01-01", f"{year}-01-02", f"{year-1}-12-31"],
+                        },
+                    ],
+                }
+            ]
+        }
+
+        with patch.object(analytic_handler, "load_data", return_value=data), patch.object(
+            analytic_handler, "_should_use_color", return_value=False
+        ):
+            out = io.StringIO()
+            with redirect_stdout(out):
+                analytic_handler.summarize_resolution_completion()
+
+        days_in_year = 366 if dt.date(year, 12, 31).timetuple().tm_yday == 366 else 365
+        total_weeks_in_year = (days_in_year + 6) // 7
+        text = out.getvalue()
+        self.assertIn("Resolution Yearly Summary", text)
+        self.assertIn("Resolution Weekly Summary", text)
+        self.assertIn("Fitness", text)
+        self.assertNotIn("Pushups", text)
+        self.assertNotIn("Run", text)
+        self.assertIn(f"3/{days_in_year}", text)
+        self.assertIn(f"2/{total_weeks_in_year}", text)
+
+    def test_summarize_resolution_completion_prints_none_when_empty(self):
+        with patch.object(analytic_handler, "load_data", return_value={"resolutions": []}):
+            out = io.StringIO()
+            with redirect_stdout(out):
+                analytic_handler.summarize_resolution_completion()
+
+        self.assertIn("Resolution Yearly Summary", out.getvalue())
+        self.assertIn("(none)", out.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
